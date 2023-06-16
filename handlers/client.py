@@ -21,7 +21,7 @@ async def place(message: types.Message):
 
 #@dp.message_handler(command=['Меню'])
 async def pizza_menu_command(message: types.Message):
-     await sqlite_db.sql_read(message)
+     await sqlite_db.sql_menu(message)
 
 
 def register_handlers_client(dp : Dispatcher):
