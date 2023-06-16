@@ -2,6 +2,7 @@ import sqlite3 as sq
 from create import dp,bot
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from keyboards import kb_client
+from aiogram import types
 
 def sql_start():
     global base, cur
@@ -12,39 +13,28 @@ def sql_start():
     base.execute('CREATE TABLE IF NOT EXISTS menu(page INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,img TEXT, name TEXT , description TEXT, price INTEGER)')
     base.commit()
 
-async def sql_menu(message):
+async def sql_menu(message, page=1):
     pages_count_query = cur.execute(f"SELECT COUNT(*) FROM `menu`")
     pages_count = int(pages_count_query.fetchone()[0])
-    print(type(page))
+
 
     product_query = cur.execute(f"SELECT 'name', 'photo', 'description', 'price' FROM 'menu' WHERE 'page' = ?;",(page,))
-    name, photo  ,description, price = product_query.fetchone()
+    name = cur.execute(f"SELECT 'name' FROM 'menu' WHERE 'page' = ?;",(page,)).fetchone()
+    description = cur.execute(f"SELECT 'description' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
+    price = cur.execute(f"SELECT 'price' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
+    photo = cur.execute(f"SELECT 'photo' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
 
     cur.execute(f"UPDATE `menu` SET `page` = ? WHERE `page` = ?;", (page, message.chat.id))
-    connect.commit()
+    base.commit()
 
     buttons = types.InlineKeyboardMarkup()
     left = page - 1 if page != 1 else pages_count
     right = page + 1 if page != pages_count else 1
-    try:
-        try:
-            photo = open(photo_path, 'rb')
-        except:
-            photo = photo_path
-        msg = f"Название: *{name}*\nОписание: "
-        msg += f"*{description}*\n" if description != None else '_нет_\n'
 
-        bot.send_photo(message.chat.id, photo=photo, caption=msg, reply_markup=buttons)
-    except:
-        msg = f"Название: *{name}*\nОписание: "
-        msg += f"*{description}*\n" if description != None else '_нет_\n'
+    mt =  f'- Название:{name}\n  \n- Описание: {description}\n  \n - Цена: {price} рублей'
 
-        bot.send_message(message.chat.id, msg, reply_markup=buttons)
+    await  bot.send_photo(message.from_user.id, photo ,mt , reply_markup=buttons)
 
-    try:
-        bot.delete_message(message.chat.id, previous_message.id)
-    except:
-        pass
 
 
 
