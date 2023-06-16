@@ -9,18 +9,18 @@ def sql_start():
     cur = base.cursor()
     if base:
         print('Data base connected OK!')
-    base.execute('CREATE TABLE IF NOT EXISTS menu(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,img TEXT, name TEXT , description TEXT, price INTEGER)')
+    base.execute('CREATE TABLE IF NOT EXISTS menu(page INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,img TEXT, name TEXT , description TEXT, price INTEGER)')
     base.commit()
 
 async def sql_menu(message):
     pages_count_query = cur.execute(f"SELECT COUNT(*) FROM `menu`")
     pages_count = int(pages_count_query.fetchone()[0])
-    print(type(id))
+    print(type(page))
 
-    product_query = cur.execute(f"SELECT 'name', 'photo', 'description', 'price' FROM 'menu' WHERE 'id' = ?;",(id,))
+    product_query = cur.execute(f"SELECT 'name', 'photo', 'description', 'price' FROM 'menu' WHERE 'page' = ?;",(page,))
     name, photo  ,description, price = product_query.fetchone()
 
-    cur.execute(f"UPDATE `menu` SET `id` = ? WHERE `id` = ?;", (id, message.chat.id))
+    cur.execute(f"UPDATE `menu` SET `page` = ? WHERE `page` = ?;", (page, message.chat.id))
     connect.commit()
 
     buttons = types.InlineKeyboardMarkup()
