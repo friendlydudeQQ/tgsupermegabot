@@ -19,10 +19,7 @@ async def sql_menu(message, page=1):
 
 
     product_query = cur.execute(f"SELECT 'name', 'photo', 'description', 'price' FROM 'menu' WHERE 'page' = ?;",(page,))
-    name = cur.execute(f"SELECT 'name' FROM 'menu' WHERE 'page' = ?;",(page,)).fetchone()
-    description = cur.execute(f"SELECT 'description' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
-    price = cur.execute(f"SELECT 'price' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
-    photo = cur.execute(f"SELECT 'photo' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
+    
 
     cur.execute(f"UPDATE `menu` SET `page` = ? WHERE `page` = ?;", (page, message.chat.id))
     base.commit()
@@ -30,6 +27,13 @@ async def sql_menu(message, page=1):
     buttons = types.InlineKeyboardMarkup()
     left = page - 1 if page != 1 else pages_count
     right = page + 1 if page != pages_count else 1
+
+    left_button = types.InlineKeyboardButton("←", callback_data=f'to {left}')
+    page_button = types.InlineKeyboardButton(f"{str(page)}/{str(pages_count)}", callback_data='_')
+    right_button = types.InlineKeyboardButton("→", callback_data=f'to {right}')
+    buy_button = types.InlineKeyboardButton("КУПИТЬ", callback_data='buy')
+    buttons.add(left_button, page_button, right_button)
+    buttons.add(buy_button)
 
     mt =  f'- Название:{name}\n  \n- Описание: {description}\n  \n - Цена: {price} рублей'
 
