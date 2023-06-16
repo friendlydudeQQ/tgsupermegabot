@@ -19,7 +19,10 @@ async def sql_menu(message, page=1):
 
 
     product_query = cur.execute(f"SELECT 'name', 'photo', 'description', 'price' FROM 'menu' WHERE 'page' = ?;",(page,))
-    
+    name = cur.execute(f"SELECT 'name' FROM 'menu' WHERE 'page' = ?;",(page,)).fetchone()
+    description = cur.execute(f"SELECT 'description' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
+    price = cur.execute(f"SELECT 'price' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
+    photo = cur.execute(f"SELECT 'photo' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
 
     cur.execute(f"UPDATE `menu` SET `page` = ? WHERE `page` = ?;", (page, message.chat.id))
     base.commit()
