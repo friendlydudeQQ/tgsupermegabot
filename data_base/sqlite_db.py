@@ -14,15 +14,22 @@ def sql_start():
     base.commit()
 
 async def sql_menu(message, page=1):
+    sqlite_connection = sq.connect('pizza.db')
+    cur = sqlite_connection.cursor()
     pages_count_query = cur.execute(f"SELECT COUNT(*) FROM `menu`")
     pages_count = int(pages_count_query.fetchone()[0])
 
+    sql_select_query = """SELECT * FROM menu WHERE page = ?"""
+    a = cur.execute(sql_select_query, (page,))
+    for row in a:
+        name = row[2]
+        description = row[3]
+        price = row[4]
+        photo = row[1]
+    print(name, description, price, photo)
 
-    product_query = cur.execute(f"SELECT 'name', 'photo', 'description', 'price' FROM 'menu' WHERE 'page' = ?;",(page,))
-    name = cur.execute(f"SELECT 'name' FROM 'menu' WHERE 'page' = ?;",(page,)).fetchone()
-    description = cur.execute(f"SELECT 'description' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
-    price = cur.execute(f"SELECT 'price' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
-    photo = cur.execute(f"SELECT 'photo' FROM 'menu' WHERE 'page' = ?;", (page,)).fetchone()
+    sqlite_connection.commit()
+
 
     cur.execute(f"UPDATE `menu` SET `page` = ? WHERE `page` = ?;", (page, message.chat.id))
     base.commit()
@@ -39,6 +46,7 @@ async def sql_menu(message, page=1):
     buttons.add(buy_button)
 
     mt =  f'- Название:{name}\n  \n- Описание: {description}\n  \n - Цена: {price} рублей'
+    print(mt)
 
     await  bot.send_photo(message.from_user.id, photo ,mt , reply_markup=buttons)
 
