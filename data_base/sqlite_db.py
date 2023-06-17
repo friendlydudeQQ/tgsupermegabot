@@ -32,7 +32,7 @@ async def sql_menu(message, page=1):
 
 
     cur.execute(f"UPDATE `menu` SET `page` = ? WHERE `page` = ?;", (page, message.chat.id))
-    base.commit()
+    sqlite_connection.commit()
 
     buttons = types.InlineKeyboardMarkup()
     left = page - 1 if page != 1 else pages_count
