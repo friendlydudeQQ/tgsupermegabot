@@ -35,8 +35,8 @@ async def sql_menu(message, page=1):
     sqlite_connection.commit()
 
     buttons = types.InlineKeyboardMarkup()
-    left = page - 1 if page != 1 else pages_count
-    right = page + 1 if page != pages_count else 1
+    left = int(page) - 1 if page != 1 else pages_count
+    right = int(page) + 1 if page != pages_count else 1
 
     left_button = types.InlineKeyboardButton("←", callback_data=f'to {left}')
     page_button = types.InlineKeyboardButton(f"{str(page)}/{str(pages_count)}", callback_data='_')
@@ -48,7 +48,13 @@ async def sql_menu(message, page=1):
     mt =  f'- Название:{name}\n  \n- Описание: {description}\n  \n - Цена: {price} рублей'
     print(mt)
 
-    await  bot.send_photo(message.from_user.id, photo ,mt , reply_markup=buttons)
+    await  bot.send_photo(message.chat.id, photo ,mt , reply_markup=buttons)
+
+@dp.callback_query_handler(lambda c: True)
+async def callback(c):
+    if 'to' in c.data:
+        page = c.data.split(' ')[1]
+    await sql_menu(c.message, page=page)
 
 
 
