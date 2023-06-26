@@ -4,6 +4,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from keyboards import kb_client
 from aiogram import types
 
+
+
 def sql_start():
     global base, cur
     base = sq.connect('pizza.db')
@@ -13,7 +15,18 @@ def sql_start():
     base.execute('CREATE TABLE IF NOT EXISTS menu(page INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,img TEXT, name TEXT , description TEXT, price INTEGER)')
     base.commit()
 
-async def sql_menu(message, page=1):
+async def cart(message):
+    count = 0
+    minus = count - 1
+    plus = count + 1
+    minus_bottom = types.InlineKeyboardButton("-", callback_data=f'to {minus}')
+    count_button = types.InlineKeyboardButton(f"{count}", callback_data='_')
+    plus_button = types.InlineKeyboardButton("+", callback_data=f'to {plus}')
+    add_button = types.InlineKeyboardButton("Добавить", callback_data='_')
+    buttons.add(minus_button, count_button, plus_button)
+    buttons.add(add_button)
+
+async def sql_menu(message, page=1, previous_message=None):
     sqlite_connection = sq.connect('pizza.db')
     cur = sqlite_connection.cursor()
     pages_count_query = cur.execute(f"SELECT COUNT(*) FROM `menu`")
@@ -41,14 +54,19 @@ async def sql_menu(message, page=1):
     left_button = types.InlineKeyboardButton("←", callback_data=f'to {left}')
     page_button = types.InlineKeyboardButton(f"{str(page)}/{str(pages_count)}", callback_data='_')
     right_button = types.InlineKeyboardButton("→", callback_data=f'to {right}')
-    buy_button = types.InlineKeyboardButton("КУПИТЬ", callback_data='buy')
+    buy_button = types.InlineKeyboardButton("Добавить в корзину", callback_data='cart')
     buttons.add(left_button, page_button, right_button)
     buttons.add(buy_button)
 
     mt =  f'- Название:{name}\n  \n- Описание: {description}\n  \n - Цена: {price} рублей'
     print(mt)
 
-    await  bot.send_photo(message.chat.id, photo ,mt , reply_markup=buttons)
+    await bot.send_photo(message.chat.id, photo ,mt , reply_markup=buttons)
+
+    await bot.delete_message(message.chat.id, message.message_id)
+
+
+
 
 @dp.callback_query_handler(lambda c: True)
 async def callback(c):
