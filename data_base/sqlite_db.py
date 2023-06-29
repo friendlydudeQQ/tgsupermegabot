@@ -15,18 +15,7 @@ def sql_start():
     base.execute('CREATE TABLE IF NOT EXISTS menu(page INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,img TEXT, name TEXT , description TEXT, price INTEGER)')
     base.commit()
 
-async def cart(message):
-    count = 0
-    minus = count - 1
-    plus = count + 1
-    countb = types.InlineKeyboardMarkup()
-    minus_button = types.InlineKeyboardButton("-", callback_data='minus')
-    count_button = types.InlineKeyboardButton(f"{count}", callback_data='_')
-    plus_button = types.InlineKeyboardButton("+", callback_data='plus')
-    add_button = types.InlineKeyboardButton("Добавить", callback_data='_')
-    countb.add(minus_button, count_button, plus_button)
-    countb.add(add_button)
-    await bot.edit_message_text(message.chat.id, reply_markup=coutb)
+
 async def sql_menu(message, page = 1):
     sqlite_connection = sq.connect('pizza.db')
     cur = sqlite_connection.cursor()
@@ -66,8 +55,32 @@ async def sql_menu(message, page = 1):
 
     await bot.delete_message(message.chat.id, message.message_id)
 
+async def cart(message, page = 1):
+    countb = types.InlineKeyboardMarkup()
+    count = 0
+    minus = count - 1
+    plus = count + 1
+    minus_button = types.InlineKeyboardButton("-", callback_data='minus')
+    count_button = types.InlineKeyboardButton(f"{count}", callback_data='qwe')
+    plus_button = types.InlineKeyboardButton("+", callback_data='plus')
+    add_button = types.InlineKeyboardButton("Добавить", callback_data='addgoods')
+    countb.add(minus_button, count_button, plus_button)
+    countb.add(add_button)
+    await bot.edit_message_text(c.message.chat.id, reply_markup=coutb)
 
-
+@dp.callback_query_handler(lambda x: True)
+async def cart(c):
+    countb = types.InlineKeyboardMarkup()
+    count = 0
+    minus = count - 1
+    plus = count + 1
+    minus_button = types.InlineKeyboardButton("-", callback_data='minus')
+    count_button = types.InlineKeyboardButton(f"{count}", callback_data='qwe')
+    plus_button = types.InlineKeyboardButton("+", callback_data='plus')
+    add_button = types.InlineKeyboardButton("Добавить", callback_data='addgoods')
+    countb.add(minus_button, count_button, plus_button)
+    countb.add(add_button)
+    await bot.edit_message_reply_markup(c.message.chat.id, c.message.message_id, reply_markup=countb)
 
 @dp.callback_query_handler(lambda c: True)
 async def callback(c):
@@ -75,8 +88,7 @@ async def callback(c):
         page = c.data.split(' ')[1]
     await sql_menu(c.message, page=page)
 
-    if c.data =="cart":
-         await cart
+
 
 
 
