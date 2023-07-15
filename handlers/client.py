@@ -12,6 +12,7 @@ async def command_start(message: types.Message):
         await message.delete()
     except:
         await message.reply('Для общение с ботом через личные сообщения, напишите ему:\nссылка на бота')
+
 # @dp.message_handler(commands=['Режим_работы'])
 async def operating_mode(message: types.Message):
     await bot.send_message(message.from_user.id, 'Вс-Чт 10:00-23:00, Пт-Сб 10:00-00:00')
