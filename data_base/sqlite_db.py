@@ -114,14 +114,13 @@ async def addgood(c):
     print(dict1)
     name = dict1["name"]
     price = dict1["price"]
+    page = dict1["idpage"]
     print(name)
     print(user_id)
     print(price)
-    basesq = sq.connect('pizza.db')
-    basesq.execute('CREATE TABLE IF NOT EXISTS korzina(`user_id` VARCHAR(99999) NULL,`name` TEXT DEFAULT NULL,"price" INTEGER)')
-    cur.execute('INSERT INTO korzina(user_id, name, price)VALUES ( ? , ? , ? )', (user_id, name, price))
-    basesq.commit()
-
+    base.execute('CREATE TABLE IF NOT EXISTS korzina(`user_id` VARCHAR(99999) NULL,`name` TEXT DEFAULT NULL,"price" INTEGER, "page" INTEGER )')
+    cur.execute('INSERT INTO korzina(user_id, page, name, price)VALUES ( ? , ? , ? , ? )', (user_id, page, name, price))
+    base.commit()
 
 @dp.callback_query_handler(lambda x: x.data == "back")
 async def backb(x):
