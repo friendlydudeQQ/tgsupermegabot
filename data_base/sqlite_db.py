@@ -119,7 +119,7 @@ async def addgood(c):
     print(price)
     basesq = sq.connect('pizza.db')
     basesq.execute('CREATE TABLE IF NOT EXISTS korzina(`user_id` VARCHAR(99999) NULL,`name` TEXT DEFAULT NULL,"price" INTEGER)')
-    cur.execute('INSERT INTO korzina VALUES (?,?,?)', (user_id, name, price))
+    cur.execute('INSERT INTO korzina(user_id, name, price)VALUES ( ? , ? , ? )', (user_id, name, price))
     basesq.commit()
 
 
@@ -134,29 +134,6 @@ async def callback(c):
     if 'to' in c.data:
         page = c.data.split(' ')[1]
     await sql_menu(c.message, page=page)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 async def sql_add_command(state):
     async with state.proxy() as data:
